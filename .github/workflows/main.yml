@@ -1,0 +1,34 @@
+name: Dep build (git)
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build gettext cmake unzip curl
+      - name: Check out stable repository code
+        uses: actions/checkout@v4
+        with:
+          ref: stable
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - name: Build stable Deb package
+        run: |
+          make CMAKE_BUILD_TYPE=RelWithDebInfo
+          cd build && cpack -G DEB
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+      - name: Upload to Releases
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            build/nvim-linux64.deb
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
