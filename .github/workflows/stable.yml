@@ -33,6 +33,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "build/nvim-linux64.deb"
-          tag: main
+          tag: stable
           
       - run: echo "🍏 This job's status is ${{ job.status }}."
