@@ -1,6 +1,10 @@
 name: Stable Deb file build
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+on:
+  push:
+    branches:
+      - main
+      - build-1
 jobs:
   Stable-Deb-Build-Actions:
     runs-on: ubuntu-latest
@@ -23,9 +27,16 @@ jobs:
           make CMAKE_BUILD_TYPE=RelWithDebInfo
           cd build && cpack -G DEB
       - run: echo "🍏 This job's status is ${{ job.status }}."
+      - name: Create Git tag
+        run: git tag -a v1.0.0 -m "Release version 1.0.0"
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+      - name: Push Git tag
+        run: git push origin v1.0.0
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        
       - name: Upload to Releases
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
             build/nvim-linux64.deb
