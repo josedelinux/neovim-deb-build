@@ -27,20 +27,10 @@ jobs:
           make CMAKE_BUILD_TYPE=RelWithDebInfo
           cd build && cpack -G DEB
       - run: echo "🍏 This job's status is ${{ job.status }}."
-      - name: Create Git tag
-        run: git tag -a v1.0.0 -m "Release version 1.0.0"
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
-      - name: Push Git tag
-        run: git push origin v1.0.0
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         
       - name: Upload to Releases
-        uses: softprops/action-gh-release@v1
+        id: create_release
+        uses: ncipollo/release-action@v1
         with:
-          files: |
-            build/nvim-linux64.deb
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: "build/nvim-linux64.deb"
