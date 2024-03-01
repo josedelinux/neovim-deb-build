@@ -21,6 +21,9 @@ jobs:
       - name: Check out stable repository code
         uses: actions/checkout@v4
 
+      - name: Display Current Ref
+        run: |
+          echo "Current Ref: ${{ github.ref }}"
 
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - name: Build Deb package
