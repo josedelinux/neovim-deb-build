@@ -2,8 +2,9 @@ name: Stable Deb file build
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on:
   push:
-    tags:
-    - '*'
+    branches:
+      - main
+      - build-1
     
 jobs:
   Stable-Deb-Build-Actions:
@@ -32,5 +33,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "build/nvim-linux64.deb"
+          tag: main
           
       - run: echo "🍏 This job's status is ${{ job.status }}."
