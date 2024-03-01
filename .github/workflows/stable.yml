@@ -1,5 +1,5 @@
 name: Stable Deb file build
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+run-name: ${{ github.actor }} is Building stable release 🚀
 on:
   push:
     branches:
