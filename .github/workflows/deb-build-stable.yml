@@ -1,13 +1,12 @@
-name: Deb file build (git)
-run-name: ${{ github.actor }}  is Building git release 🚀
+name: Stable Deb file build
+run-name: ${{ github.actor }} is Building stable release 🚀
 on:
-  push:
+  workflow_dispatch:
     branches:
-      - main
       - build-1
     
 jobs:
-  Git-Deb-Build-Actions:
+  Stable-Deb-Build-Actions:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
@@ -20,13 +19,10 @@ jobs:
           
       - name: Check out stable repository code
         uses: actions/checkout@v4
-
-      - name: Display Current Ref
-        run: |
-          echo "Current Ref: ${{ github.ref }}"
-
+        with:
+          ref: stable
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - name: Build Deb package
+      - name: Build stable Deb package
         run: |
           make CMAKE_BUILD_TYPE=RelWithDebInfo
           cd build && cpack -G DEB
@@ -36,6 +32,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "build/nvim-linux64.deb"
-          tag: git
+          tag: stable
           
       - run: echo "🍏 This job's status is ${{ job.status }}."
