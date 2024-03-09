@@ -922,7 +922,7 @@ vim.in_fast_event()                                      *vim.in_fast_event()*
     When this is `false` most API functions are callable (but may be subject
     to other restrictions such as |textlock|).
 
-vim.rpcnotify({channel}, {method}, {args}, {...})            *vim.rpcnotify()*
+vim.rpcnotify({channel}, {method}, {...})                    *vim.rpcnotify()*
     Sends {event} to {channel} via |RPC| and returns immediately. If {channel}
     is 0, the event is broadcast to all channels.
 
@@ -931,10 +931,9 @@ vim.rpcnotify({channel}, {method}, {args}, {...})            *vim.rpcnotify()*
     Parameters: ~
       • {channel}  (`integer`)
       • {method}   (`string`)
-      • {args}     (`any[]?`)
       • {...}      (`any?`)
 
-vim.rpcrequest({channel}, {method}, {args}, {...})          *vim.rpcrequest()*
+vim.rpcrequest({channel}, {method}, {...})                  *vim.rpcrequest()*
     Sends a request to {channel} to invoke {method} via |RPC| and blocks until
     a response is received.
 
@@ -944,7 +943,6 @@ vim.rpcrequest({channel}, {method}, {args}, {...})          *vim.rpcrequest()*
     Parameters: ~
       • {channel}  (`integer`)
       • {method}   (`string`)
-      • {args}     (`any[]?`)
       • {...}      (`any?`)
 
 vim.schedule({fn})                                            *vim.schedule()*
@@ -1433,9 +1431,6 @@ vim.env                                                              *vim.env*
         print(vim.env.TERM)
 <
 
-    Parameters: ~
-      • {var}  (`string`)
-
 vim.go                                                                *vim.go*
     Get or set global |options|. Like `:setglobal`. Invalid key is an error.
 
@@ -1831,15 +1826,15 @@ vim.inspect_pos({bufnr}, {row}, {col}, {filter})           *vim.inspect_pos()*
       • {col}     (`integer?`) col to inspect, 0-based. Defaults to the col of
                   the current cursor
       • {filter}  (`table?`) Table with key-value pairs to filter the items
-                  • {syntax} (`boolean`) Include syntax based highlight groups
-                    (defaults to true)
-                  • {treesitter} (`boolean`) Include treesitter based
-                    highlight groups (defaults to true)
+                  • {syntax} (`boolean`, default: `true`) Include syntax based
+                    highlight groups.
+                  • {treesitter} (`boolean`, default: `true`) Include
+                    treesitter based highlight groups.
                   • {extmarks} (`boolean|"all"`, default: true) Include
                     extmarks. When `all`, then extmarks without a `hl_group`
                     will also be included.
-                  • {semantic_tokens} (`boolean`) Include semantic token
-                    highlights (defaults to true)
+                  • {semantic_tokens} (`boolean`, default: true) Include
+                    semantic token highlights.
 
     Return: ~
         (`table`) a table with the following key-value pairs. Items are in
@@ -1863,7 +1858,16 @@ vim.show_pos({bufnr}, {row}, {col}, {filter})                 *vim.show_pos()*
                   the current cursor
       • {col}     (`integer?`) col to inspect, 0-based. Defaults to the col of
                   the current cursor
-      • {filter}  (`table?`) see |vim.inspect_pos()|
+      • {filter}  (`table?`) A table with the following fields:
+                  • {syntax} (`boolean`, default: `true`) Include syntax based
+                    highlight groups.
+                  • {treesitter} (`boolean`, default: `true`) Include
+                    treesitter based highlight groups.
+                  • {extmarks} (`boolean|"all"`, default: true) Include
+                    extmarks. When `all`, then extmarks without a `hl_group`
+                    will also be included.
+                  • {semantic_tokens} (`boolean`, default: true) Include
+                    semantic token highlights.
 
 
 
@@ -1989,7 +1993,7 @@ vim.gsplit({s}, {sep}, {opts})                                  *vim.gsplit()*
                   end of the sequence.
 
     Return: ~
-        (`function`) Iterator over the split components
+        (`fun():string?`) Iterator over the split components
 
     See also: ~
       • |string.gmatch()|
@@ -2089,7 +2093,7 @@ vim.ringbuf({size})                                            *vim.ringbuf()*
       • {size}  (`integer`)
 
     Return: ~
-        (`table`)
+        (`vim.Ringbuf`) ringbuf See |vim.Ringbuf|.
 
 vim.spairs({t})                                                 *vim.spairs()*
     Enumerates key-value pairs of a table, ordered by key.
@@ -2097,8 +2101,10 @@ vim.spairs({t})                                                 *vim.spairs()*
     Parameters: ~
       • {t}  (`table`) Dict-like table
 
-    Return: ~
-        (`function`) |for-in| iterator over sorted keys and their values
+    Return (multiple): ~
+        (`fun(table: table<K, V>, index?: K):K, V`) |for-in| iterator over
+        sorted keys and their values
+        (`table`)
 
     See also: ~
       • Based on
@@ -2140,18 +2146,6 @@ vim.startswith({s}, {prefix})                               *vim.startswith()*
 
     Return: ~
         (`boolean`) `true` if `prefix` is a prefix of `s`
-
-vim.tbl_add_reverse_lookup({o})                 *vim.tbl_add_reverse_lookup()*
-    Add the reverse lookup values to an existing table. For example:
-    `tbl_add_reverse_lookup { A = 1 } == { [1] = 'A', A = 1 }`
-
-    Note that this modifies the input.
-
-    Parameters: ~
-      • {o}  (`table`) Table to add the reverse to
-
-    Return: ~
-        (`table`) o
 
 vim.tbl_contains({t}, {value}, {opts})                    *vim.tbl_contains()*
     Checks if a table contains a given value, specified either directly or via
@@ -2334,8 +2328,8 @@ vim.tbl_map({func}, {t})                                       *vim.tbl_map()*
     Apply a function to all values of a table.
 
     Parameters: ~
-      • {func}  (`function`) Function
-      • {t}     (`table`) Table
+      • {func}  (`fun(value: T): any`) Function
+      • {t}     (`table<any, T>`) Table
 
     Return: ~
         (`table`) Table of transformed values
@@ -2840,7 +2834,7 @@ vim.fs.basename({file})                                    *vim.fs.basename()*
     Return the basename of the given path
 
     Parameters: ~
-      • {file}  (`string`) Path
+      • {file}  (`string?`) Path
 
     Return: ~
         (`string?`) Basename of {file}
@@ -2868,7 +2862,7 @@ vim.fs.dirname({file})                                      *vim.fs.dirname()*
     Return the parent directory of the given path
 
     Parameters: ~
-      • {file}  (`string`) Path
+      • {file}  (`string?`) Path
 
     Return: ~
         (`string?`) Parent directory of {file}
@@ -2916,16 +2910,16 @@ vim.fs.find({names}, {opts})                                   *vim.fs.find()*
                  • path: full path of the current item The function should
                    return `true` if the given item is considered a match.
       • {opts}   (`table`) Optional keyword arguments:
-                 • {path} (`string`) Path to begin searching from. If omitted,
-                   the |current-directory| is used.
-                 • {upward} (`boolean`, default: `false`) Search upward
+                 • {path}? (`string`) Path to begin searching from. If
+                   omitted, the |current-directory| is used.
+                 • {upward}? (`boolean`, default: `false`) Search upward
                    through parent directories. Otherwise, search through child
                    directories (recursively).
-                 • {stop} (`string`) Stop searching when this directory is
+                 • {stop}? (`string`) Stop searching when this directory is
                    reached. The directory itself is not searched.
-                 • {type} (`string`) Find only items of the given type. If
+                 • {type}? (`string`) Find only items of the given type. If
                    omitted, all items that match {names} are included.
-                 • {limit} (`number`, default: `1`) Stop the search after
+                 • {limit}? (`number`, default: `1`) Stop the search after
                    finding this many matches. Use `math.huge` to place no
                    limit on the number of matches.
 
@@ -3766,7 +3760,7 @@ vim.version.range({spec})                                *vim.version.range()*
       • {spec}  (`string`) Version range "spec"
 
     Return: ~
-        (`table`) A table with the following fields:
+        (`table?`) A table with the following fields:
         • {from} (`vim.Version`)
         • {to}? (`vim.Version`)
         • {has} (`fun(self: vim.VersionRangeversion: string|vim.Version)`)
